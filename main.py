@@ -72,9 +72,13 @@ class AbstractCar:
         self.move()
     #function to move car
     def move(self): 
-        #move in one direction
-        #move to the right based on velocity
-        self.x += self.vel
+        #using radians to calculate angles (360 = 2pi, 180 = pi)
+        radians = math.radians(self.angle)
+        vertical = math.cos(radians) * self.vel
+        horizontal = math.sin(radians) * self.vel
+
+        self.y -= vertical 
+        self.x -= horizontal
 
 
 
