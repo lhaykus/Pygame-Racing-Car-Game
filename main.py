@@ -19,8 +19,11 @@ TRACK = scale_image(pygame.image.load('images/track.png'), 0.9)
 TRACK_BORDER = scale_image(pygame.image.load('images/track-border.png'), 0.9)
 #Masks- used to see if pixels in the rectangles of pygame are colliding
 TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
+
 #load finish line image
 FINISH = pygame.image.load('images/finish.png')
+FINISH_MASK = pygame.mask.from_surface(FINISH)
+FINISH_POSITION = (130, 150)
 
 #load car images
 PURPLE_CAR = scale_image(pygame.image.load('images/purple-car.png'), 0.55 )
@@ -172,7 +175,7 @@ run = True
 #regardless of how slow/fast their processor is
 clock = pygame.time.Clock()
 #Creating list of images and what coordinates to draw them
-images = [(GRASS, (0,0)), (TRACK, (0,0))]
+images = [(GRASS, (0,0)), (TRACK, (0,0)), (FINISH, FINISH_POSITION), (TRACK_BORDER, (0,0))]
 #set player car as playercar class, pass max veolcity and rotation velocity
 player_car = PlayerCar(4, 4)
 while run:
@@ -198,6 +201,12 @@ while run:
     move_player(player_car)
 
     if player_car.collide(TRACK_BORDER_MASK) != None:
-        player_car.bounce()
+       player_car.bounce()
+
+    # split the tuple that stores position, Xand Y and stores as individual coordinates and passes this to the function as two arguments
+    # be the same as saying FINISH_POSITION(180, 200)
+    if player_car.collide(FINISH_MASK, *FINISH_POSITION) != None:
+        print('finish')
+
    
 pygame.quit()
