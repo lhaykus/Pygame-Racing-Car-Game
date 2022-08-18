@@ -1,4 +1,5 @@
 #importing packages
+from ctypes import c_char_p
 import pygame
 import time
 import math
@@ -16,7 +17,8 @@ TRACK = scale_image(pygame.image.load('images/track.png'), 0.9)
 
 #loading track border image
 TRACK_BORDER = scale_image(pygame.image.load('images/track-border.png'), 0.9)
-
+#Masks- used to see if pixels in the rectangles of pygame are colliding
+TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 #load finish line image
 FINISH = pygame.image.load('images/finish.png')
 
@@ -39,7 +41,6 @@ FPS = 60
 # Abstract class - there will be a player car and a computer car, similiarities between the two will go in an abstract class
 #Abstract class = meant to act as base class for other classes
 class AbstractCar:
-   
     # wanting to know max velocity and how quickly car can rotate
     def __init__(self, max_vel, rotation_vel) :
         self.img = self.IMG
@@ -89,6 +90,28 @@ class AbstractCar:
         self.y -= vertical 
         self.x -= horizontal
 
+    #function to tell if images are colliding
+    def collide(self, mask, x=0, y=0):
+        car_mask = pygame.mask.from_surface(self.img)
+        #calculate offset x and offset y, use interger for offset
+        #offset relative to calling mask
+        #using the current x and y position and subtracting the x and y from the other calling mask that gives displatment between both masks
+        offset = (int(self.x - x), int(self.y - y))
+        #poi = point of intersection
+        poi = mask.overlap(car_mask, offset)
+        #if poi returned = collison occured, otherwise there was no collusion
+        return poi
+
+
+
+
+
+#Creating new class for PlayerCar, refering and using code from AbstractCar, setting player image 
+class PlayerCar(AbstractCar):
+    #setting class image
+    IMG = PURPLE_CAR
+    START_POS = (180, 200)
+
     #method to reduce speed when not pressing key
     def reduce_speed(self):
         # when speed decreases, velocity is reduced by half of the acceleration and car moves
@@ -96,11 +119,6 @@ class AbstractCar:
         self.vel = max(self.vel - self.acceleration/2, 0)
         self.move()
 
-#Creating new class for PlayerCar, refering and using code from AbstractCar, setting player image 
-class PlayerCar(AbstractCar):
-    #setting class image
-    IMG = PURPLE_CAR
-    START_POS = (180, 200)
 
 
 #draw funciton takes window to draw on and images you want to draw
@@ -110,6 +128,30 @@ def draw(win, images, player_car):
 
     player_car.draw(win)
     pygame.display.update()
+
+def move_player(player_car):
+     #ROTATE the car while pressing keys
+    keys = pygame.key.get_pressed()
+    moved = False
+        #if moving car left (pressing A key)
+        # using WASD to move car
+        # K_SPACE, K-SHIFT = move with space or shift key
+    if keys[pygame.K_a]:
+            player_car.rotate(left=True)
+        #pressing D to move car to the right
+    if keys[pygame.K_d]:
+            player_car.rotate(right=True)
+        #w key increase speed and moves car forward
+    if keys[pygame.K_w]:
+            moved = True
+            player_car.move_forward()
+    if keys[pygame.K_s]:
+            moved = True
+            player_car.move_backward()
+    # when not pressing on gas (w key) the speed is reduced
+    if not moved:
+        player_car.reduce_speed()
+
 
 #EVENT LOOPS
 # Creating an event loop - event loop is a constant loop that handles all movement, events, etc.
@@ -145,25 +187,9 @@ while run:
             run = False
             break
 
-    #ROTATE the car while pressing keys
-    keys = pygame.key.get_pressed()
-    moved = False
-        #if moving car left (pressing A key)
-        # using WASD to move car
-        # K_SPACE, K-SHIFT = move with space or shift key
-    if keys[pygame.K_a]:
-            player_car.rotate(left=True)
-        #pressing D to move car to the right
-    if keys[pygame.K_d]:
-            player_car.rotate(right=True)
-        #w key increase speed and moves car forward
-    if keys[pygame.K_w]:
-            moved = True
-            player_car.move_forward()
-    if keys[pygame.K_s]:
-            moved = True
-            player_car.move_backward()
-    # when not pressing on gas (w key) the speed is reduced
-    if not moved:
-        player_car.reduce_speed()
+    move_player(player_car)
+
+    if player_car.collide(TRACK_BORDER_MASK) != None:
+        print('collide')
+   
 pygame.quit()
