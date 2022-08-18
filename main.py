@@ -70,9 +70,10 @@ class AbstractCar:
         #if max_vel is already met then move car forward
         self.vel = min(self.vel + self.acceleration, self.max_vel)
         self.move()
+
     #function to move car
     def move(self): 
-        #using radians to calculate angles (360 = 2pi, 180 = pi)
+        # using radians to calculate angles (360 = 2pi, 180 = pi)
         radians = math.radians(self.angle)
         vertical = math.cos(radians) * self.vel
         horizontal = math.sin(radians) * self.vel
@@ -80,7 +81,12 @@ class AbstractCar:
         self.y -= vertical 
         self.x -= horizontal
 
-
+    #method to reduce speed when not pressing key
+    def reduce_speed(self):
+        # when speed decreases, velocity is reduced by half of the acceleration and car moves
+        # stop at 0 so car isnt moving backwards
+        self.vel = max(self.vel - self.acceleration/2, 0)
+        self.move()
 
 #Creating new class for PlayerCar, refering and using code from AbstractCar, setting player image 
 class PlayerCar(AbstractCar):
@@ -133,6 +139,7 @@ while run:
 
     #ROTATE the car while pressing keys
     keys = pygame.key.get_pressed()
+    moved = False
         #if moving car left (pressing A key)
         # using WASD to move car
         # K_SPACE, K-SHIFT = move with space or shift key
@@ -143,7 +150,9 @@ while run:
             player_car.rotate(right=True)
         #w key increase speed and moves car forward
     if keys[pygame.K_w]:
+            moved = True
             player_car.move_forward()
-    
-
+    # when not pressing on gas (w key) the speed is reduced
+    if not moved:
+        player_car.reduce_speed()
 pygame.quit()
