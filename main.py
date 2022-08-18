@@ -71,6 +71,14 @@ class AbstractCar:
         self.vel = min(self.vel + self.acceleration, self.max_vel)
         self.move()
 
+    #move backwards
+    def move_backward(self):
+        #subrtacting velocity when going backwards
+        #want maximum negative velcoity to be 1/2 the forward velocity- making sure when going in reverse
+        #there is a max speed and youre going slower than if you were going forwards like a real car
+        self.vel = max(self.vel - self.acceleration, -self.max_vel/2)
+        self.move()
+
     #function to move car
     def move(self): 
         # using radians to calculate angles (360 = 2pi, 180 = pi)
@@ -152,6 +160,9 @@ while run:
     if keys[pygame.K_w]:
             moved = True
             player_car.move_forward()
+    if keys[pygame.K_s]:
+            moved = True
+            player_car.move_backward()
     # when not pressing on gas (w key) the speed is reduced
     if not moved:
         player_car.reduce_speed()
