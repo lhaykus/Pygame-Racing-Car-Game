@@ -109,4 +109,16 @@ while run:
             run = False
             break
 
+    #moving the car while pressing keys
+    keys = pygame.key.get_pressed()
+        #if moving car left (pressing A key)
+        # using WASD to move car
+        # K_SPACE, K-SHIFT = move with space or shift key
+    if keys[pygame.K_a]:
+            player_car.rotate(left=True)
+        #pressing D to move car to the right
+    if keys[pygame.K_d]:
+            player_car.rotate(right=True)
+    
+
 pygame.quit()
