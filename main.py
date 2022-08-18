@@ -2,17 +2,22 @@
 import pygame
 import time
 import math
+#importing resizing image funciton from utils file
+from utils import scale_image
+
+
 
 #create variable and load in images
 #GRASS = constant(not going to change)
 #loading grass image from the images folder
-GRASS = pygame.image.load('images/grass.jpg')
+# scale_image 2.5 = resizing image by factor of 2.5
+GRASS = scale_image(pygame.image.load('images/grass.jpg'), 2.5)
 
 #loading track image from image folder
-TRACK = pygame.image.load('images/track.png')
+TRACK = scale_image(pygame.image.load('images/track.png'), 0.9)
 
 #loading track border image
-TRACK_BORDER = pygame.image.load('images/track-border.png')
+TRACK_BORDER = scale_image(pygame.image.load('images/track-border.png'), 0.9)
 
 #load finish line image
 FINISH = pygame.image.load('images/finish.png')
@@ -52,6 +57,7 @@ while run:
    #order of images drawn matter = GRASS then TRACK = track drawn over grass
     WIN.blit(GRASS, (0,0))
     WIN.blit(TRACK, (0,0))
+    WIN.blit(FINISH, (0,0))
 
     #pygame allows items to be drawn onto screen and when this is run
     # what was drawn on screen will then be displayed 
