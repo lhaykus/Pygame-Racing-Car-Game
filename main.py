@@ -23,7 +23,7 @@ TRACK_BORDER_MASK = pygame.mask.from_surface(TRACK_BORDER)
 #load finish line image
 FINISH = pygame.image.load('images/finish.png')
 FINISH_MASK = pygame.mask.from_surface(FINISH)
-FINISH_POSITION = (130, 150)
+FINISH_POSITION = (130, 230)
 
 #load car images
 PURPLE_CAR = scale_image(pygame.image.load('images/purple-car.png'), 0.55 )
@@ -113,7 +113,7 @@ class AbstractCar:
 class PlayerCar(AbstractCar):
     #setting class image
     IMG = PURPLE_CAR
-    START_POS = (180, 200)
+    START_POS = (180, 180)
 
     #method to reduce speed when not pressing key
     def reduce_speed(self):
@@ -129,6 +129,12 @@ class PlayerCar(AbstractCar):
         #if car is going forward and hits wall, vel is +, the vel becomes - and throws car backwards
         self.vel = -self.vel
         self.move()
+
+    #reset cars position to prepare for next level
+    def reset(self):
+        self.x, self.y = self.START_POS
+        self.angle = 0
+        self.vel = 0
 
 
 
@@ -203,10 +209,16 @@ while run:
     if player_car.collide(TRACK_BORDER_MASK) != None:
        player_car.bounce()
 
+    finish_poi_collide = player_car.collide(FINISH_MASK, *FINISH_POSITION)
     # split the tuple that stores position, Xand Y and stores as individual coordinates and passes this to the function as two arguments
     # be the same as saying FINISH_POSITION(180, 200)
-    if player_car.collide(FINISH_MASK, *FINISH_POSITION) != None:
-        print('finish')
+    if finish_poi_collide != None:
+        #if the y axis of point of intersection is 0 that means that the car hit the finish line from the back (didnt go throuhgt whole course)
+        # so have car bounce off to make player go through whole course
+        if finish_poi_collide[1] == 0:
+           player_car.bounce()
+        else: 
+            player_car.reset()
 
    
 pygame.quit()
