@@ -119,6 +119,14 @@ class PlayerCar(AbstractCar):
         self.vel = max(self.vel - self.acceleration/2, 0)
         self.move()
 
+    #method for when car bounces off wall to throw car back in direction it hit from
+    def bounce(self):
+        #reverse the velocity so car will be thrown oppostie direction
+        #if car is going backwards and vel is -, the vel now becomes + and throws car forward
+        #if car is going forward and hits wall, vel is +, the vel becomes - and throws car backwards
+        self.vel = -self.vel
+        self.move()
+
 
 
 #draw funciton takes window to draw on and images you want to draw
@@ -190,6 +198,6 @@ while run:
     move_player(player_car)
 
     if player_car.collide(TRACK_BORDER_MASK) != None:
-        print('collide')
+        player_car.bounce()
    
 pygame.quit()
