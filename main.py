@@ -50,6 +50,9 @@ class AbstractCar:
         self.angle = 0
         # X and Y position of car
         self.x, self.y = self.START_POS
+        # acceleration to move car
+        # increase acceleration 0.1 pixels by second when pressing button
+        self.acceleration = 0.1
 #creating funciton to rotate car based on direction turning
     def rotate(self, left=False, right=False):
         if left:
@@ -59,6 +62,21 @@ class AbstractCar:
 
     def draw(self, win):
         blit_rotate_center(win, self.img, (self.x, self.y), self.angle)
+
+    #increase velocity of car based on acceleration 
+    #when at max veloctiy car will move forward
+    def move_forward(self):
+        #if veloctiy is less than max_vel, increase velocity and acceleration
+        #if max_vel is already met then move car forward
+        self.vel = min(self.vel + self.acceleration, self.max_vel)
+        self.move()
+    #function to move car
+    def move(self): 
+        #move in one direction
+        #move to the right based on velocity
+        self.x += self.vel
+
+
 
 #Creating new class for PlayerCar, refering and using code from AbstractCar, setting player image 
 class PlayerCar(AbstractCar):
@@ -109,7 +127,7 @@ while run:
             run = False
             break
 
-    #moving the car while pressing keys
+    #ROTATE the car while pressing keys
     keys = pygame.key.get_pressed()
         #if moving car left (pressing A key)
         # using WASD to move car
@@ -119,6 +137,9 @@ while run:
         #pressing D to move car to the right
     if keys[pygame.K_d]:
             player_car.rotate(right=True)
+        #w key increase speed and moves car forward
+    if keys[pygame.K_w]:
+            player_car.move_forward()
     
 
 pygame.quit()
