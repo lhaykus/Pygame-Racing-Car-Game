@@ -49,7 +49,9 @@ while run:
     #blit- used to draw image on screen
     #drawing image on window display screen
     # 0,0 = top left corner, as you go down screen Y increases, X increases as you go right
+   #order of images drawn matter = GRASS then TRACK = track drawn over grass
     WIN.blit(GRASS, (0,0))
+    WIN.blit(TRACK, (0,0))
 
     #pygame allows items to be drawn onto screen and when this is run
     # what was drawn on screen will then be displayed 
