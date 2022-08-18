@@ -28,3 +28,20 @@ WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 #naming window
 pygame.display.set_caption("Racing Game!")
+
+#DISPLAYING images
+# Creating an event loop - event loop is a constant loop that handles all movement, events, etc.
+#Set up main event loop to keep game 'alive' and running on screen adn then once game ends or user quits
+# the screen, the loop is broken
+
+run = True
+while run:
+    #get list of all events to loop through
+    for event in pygame.event.get():
+        #check to see if user closed window
+        # if window has been closed, the loop is broken, the game is no longer running and so youd quit game
+        if event.type == pygame.QUIT:
+            run = False
+            break
+
+pygame.quit()
