@@ -57,6 +57,7 @@ class AbstractCar:
         # acceleration to move car
         # increase acceleration 0.1 pixels by second when pressing button
         self.acceleration = 0.1
+
 #creating funciton to rotate car based on direction turning
     def rotate(self, left=False, right=False):
         if left:
@@ -136,14 +137,39 @@ class PlayerCar(AbstractCar):
         self.angle = 0
         self.vel = 0
 
+# Class for computer car
+class ComputerCar(AbstractCar):
+    IMG = WHITE_CAR
+    START_POS = (150, 180)
+
+    def __init__(self, max_vel, rotation_vel, path=[]):
+        super().__init__(max_vel, rotation_vel)
+        # path = the path the computer car will take
+        self.path = path
+        self.current_point = 0
+        # will start at max_vel at move at that speed the entire time
+        self.vel = max_vel
+
+    def draw_points(self, win):
+        for point in self.path:
+            # draw a cirlce, color = red, draw at point, radius of 5
+            pygame.draw.circle(win, (255,0,0), point, 5)
+
+#draw all points in the path for computer car to follow
+    def draw(self, win):
+        super().draw(win)
+        self.draw_points(win)
+
+
 
 
 #draw funciton takes window to draw on and images you want to draw
-def draw(win, images, player_car):
+def draw(win, images, player_car, computer_car):
     for img, pos in images:
         win.blit(img, pos)
 
     player_car.draw(win)
+    computer_car.draw(win)
     pygame.display.update()
 
 def move_player(player_car):
@@ -184,12 +210,14 @@ clock = pygame.time.Clock()
 images = [(GRASS, (0,0)), (TRACK, (0,0)), (FINISH, FINISH_POSITION), (TRACK_BORDER, (0,0))]
 #set player car as playercar class, pass max veolcity and rotation velocity
 player_car = PlayerCar(4, 4)
+computer_car = ComputerCar(4, 4)
+
 while run:
     #setting max FPS that the while loop can run 
     clock.tick(FPS)
 
     #draw in images
-    draw(WIN, images, player_car)
+    draw(WIN, images, player_car, computer_car)
 
 
     #pygame allows items to be drawn onto screen and when this is run
