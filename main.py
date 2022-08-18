@@ -20,3 +20,11 @@ FINISH = pygame.image.load('images/finish.png')
 #load car images
 PURPLE_CAR = pygame.image.load('images/purple-car.png')
 WHITE_CAR = pygame.image.load('images/white-car.png')
+
+#set up display screen to be same size as width and height as track
+# get the width and height from track image
+WIDTH, HEIGHT = TRACK.get_width(), TRACK.get_height()
+#creating window to view game - making window widht, height from track image
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+#naming window
+pygame.display.set_caption("Racing Game!")
