@@ -161,7 +161,7 @@ class ComputerCar(AbstractCar):
 #draw all points in the path for computer car to follow
     def draw(self, win):
         super().draw(win)
-        self.draw_points(win)
+    #    self.draw_points(win)
 
 # calculate displacement in X and Y between the target point and current position
 # once displacement is found, then the angle between car and the point will be found
@@ -254,6 +254,29 @@ def move_player(player_car):
     if not moved:
         player_car.reduce_speed()
 
+def handle_collision(player_car, computer_car):
+    
+    if player_car.collide(TRACK_BORDER_MASK) != None:
+        player_car.bounce()
+
+# when computer car hits finish line 
+    computer_finish_poi_collide  = computer_car.collide(FINISH_MASK, *FINISH_POSITION)
+    if computer_finish_poi_collide != None:
+        player_car.reset()
+        computer_car.reset()
+
+
+    player_finish_poi_collide = player_car.collide(FINISH_MASK, *FINISH_POSITION)
+    # split the tuple that stores position, Xand Y and stores as individual coordinates and passes this to the function as two arguments
+    # be the same as saying FINISH_POSITION(180, 200)
+    if player_finish_poi_collide != None:
+        #if the y axis of point of intersection is 0 that means that the car hit the finish line from the back (didnt go throuhgt whole course)
+        # so have car bounce off to make player go through whole course
+        if player_finish_poi_collide[1] == 0:
+            player_car.bounce()
+        else:
+            player_car.reset()
+            computer_car.reset()
 
 #EVENT LOOPS
 # Creating an event loop - event loop is a constant loop that handles all movement, events, etc.
@@ -291,7 +314,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
             break
-        
+
 #method to allow us to click and create points for path of computer car
         #if event.type == pygame.MOUSEBUTTONDOWN:
           #  pos = pygame.mouse.get_pos()
@@ -300,19 +323,7 @@ while run:
     move_player(player_car)
     computer_car.move()
 
-    if player_car.collide(TRACK_BORDER_MASK) != None:
-       player_car.bounce()
-
-    finish_poi_collide = player_car.collide(FINISH_MASK, *FINISH_POSITION)
-    # split the tuple that stores position, Xand Y and stores as individual coordinates and passes this to the function as two arguments
-    # be the same as saying FINISH_POSITION(180, 200)
-    if finish_poi_collide != None:
-        #if the y axis of point of intersection is 0 that means that the car hit the finish line from the back (didnt go throuhgt whole course)
-        # so have car bounce off to make player go through whole course
-        if finish_poi_collide[1] == 0:
-           player_car.bounce()
-        else: 
-            player_car.reset()
+    handle_collision(player_car, computer_car)
 
 #print out computer car path to have code to use later
 print(computer_car.path)
