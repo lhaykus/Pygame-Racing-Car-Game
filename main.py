@@ -39,6 +39,8 @@ pygame.display.set_caption("Racing Game!")
 
 #setting frames per second
 FPS = 60
+# points created for the computer car
+PATH = [(166, 104), (91, 87), (69, 474), (326, 727), (410, 551), (575, 502), (612, 700), (756, 657), (730, 382), (404, 339), (484, 246), (743, 218), (707, 82), (334, 78), (274, 369), (174, 321), (164, 233)]
 
 # Setting up CLASS
 # Abstract class - there will be a player car and a computer car, similiarities between the two will go in an abstract class
@@ -150,6 +152,7 @@ class ComputerCar(AbstractCar):
         # will start at max_vel at move at that speed the entire time
         self.vel = max_vel
 
+#allows us to click and draw points for the computer car to follow
     def draw_points(self, win):
         for point in self.path:
             # draw a cirlce, color = red, draw at point, radius of 5
@@ -159,6 +162,62 @@ class ComputerCar(AbstractCar):
     def draw(self, win):
         super().draw(win)
         self.draw_points(win)
+
+# calculate displacement in X and Y between the target point and current position
+# once displacement is found, then the angle between car and the point will be found
+# car direction can then be adjusted to move towards target point
+    def calculate_angle(self):
+        # getting current point
+        target_x, target_y = self.path[self.current_point]
+        # finding the difference between target x and y and current position x and y
+        x_diff = target_x - self.x
+        y_diff = target_y - self.y
+
+# if y = 0, manually set angle 
+        if y_diff == 0:
+            desired_radian_angle = math.pi/2
+        else: 
+            #give angle between car and target point
+            desired_radian_angle = math.atan(x_diff/y_diff)
+# if angle of target point is lower on screen that current y position, the turn needed to make is more extreme that what the angle is 
+# add math.pi to make sure car is turnign into right direction
+        if target_y > self.y:
+            desired_radian_angle += math.pi
+
+# convert angle from radians to degrees and take current angle and subtract desired angle, if negative turn left, if positive turn right 
+        difference_in_angle = self.angle - math.degrees(desired_radian_angle)
+       #if angle to turn is greater than 180, subrtract 360 from the angle to get the negative angle to move in the opposite direction at less degrees
+       # example: if left = 220 degrees, but right is 140 degrees, subrtract 220 -360 = -140 to move to the right 140 degrees instead of haviong to go a full 220
+        if difference_in_angle >= 180:
+            difference_in_angle -= 360
+
+        if difference_in_angle > 0:
+            # if difference in angle is less than rotation velocity well move by that amount
+            self.angle -= min(self.rotation_vel, abs(difference_in_angle))
+        else:
+            self.angle += min(self.rotation_vel, abs(difference_in_angle))
+
+    def update_path_point(self):
+        target = self.path[self.current_point]
+        # creating a rectangle from left top point of car and getting width and height to see if any collisions are happeing with that rectangle
+        rect = pygame.Rect(
+            self.x, self.y, self.img.get_width(), self.img.get_height())
+     # will tell if target is being collided with, takes X and Y coordinates
+        if rect.collidepoint(*target):
+            # if current point is hit go to next point
+            self.current_point += 1
+
+
+# checking to make sure car is in right directoin and facing right angle to move forward
+    def move (self): 
+        if self.current_point >= len(self.path):
+            return
+            # calculate angle for computer car to move to 
+        self.calculate_angle()
+        # check to see if car needs to move to next point
+        self.update_path_point()
+        super().move()
+
 
 
 
@@ -210,7 +269,8 @@ clock = pygame.time.Clock()
 images = [(GRASS, (0,0)), (TRACK, (0,0)), (FINISH, FINISH_POSITION), (TRACK_BORDER, (0,0))]
 #set player car as playercar class, pass max veolcity and rotation velocity
 player_car = PlayerCar(4, 4)
-computer_car = ComputerCar(4, 4)
+# passing PATH in computer car so the car will follow the created path
+computer_car = ComputerCar(4, 4, PATH)
 
 while run:
     #setting max FPS that the while loop can run 
@@ -231,8 +291,14 @@ while run:
         if event.type == pygame.QUIT:
             run = False
             break
+        
+#method to allow us to click and create points for path of computer car
+        #if event.type == pygame.MOUSEBUTTONDOWN:
+          #  pos = pygame.mouse.get_pos()
+          #  computer_car.path.append(pos)
 
     move_player(player_car)
+    computer_car.move()
 
     if player_car.collide(TRACK_BORDER_MASK) != None:
        player_car.bounce()
@@ -248,5 +314,6 @@ while run:
         else: 
             player_car.reset()
 
-   
+#print out computer car path to have code to use later
+print(computer_car.path)
 pygame.quit()
