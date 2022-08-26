@@ -7,9 +7,10 @@
 
 
 - [Built With](#built-with)
+- [Features](#feautres)
 - [App View](#app-view)
-- [Future Developments](#future-developments)
 - [Credits](#credits)
+- [How To Use](#how-to-use)
 
 
 ## Built With
@@ -25,6 +26,10 @@
 ## App View
 - ![appview](./images/appview.gif)
 
+## How to Use
+- Clone repo
+- Start application in VSCode in main.py by clicking ▶️ on top right corner
+- Start your engines and have fun!
 
 
 ## Credits
